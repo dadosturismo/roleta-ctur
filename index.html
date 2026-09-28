@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#6b2b7c" />
+    <meta name="description" content="Roleta promocional Curitiba Turismo." />
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="icon" href="./assets/icon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="./assets/logo_ctur_sem_fundo_cortado.png" />
+    <link rel="stylesheet" href="./styles.css" />
+    <title>Roleta CTUR</title>
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="brand" aria-label="Curitiba Turismo">
+        <img
+          src="./assets/logo_ctur_sem_fundo_cortado.png"
+          alt="CTUR Curitiba Turismo"
+          width="428"
+          height="208"
+        />
+        <p>Experiência Curitiba</p>
+      </header>
+
+      <section class="game-card" aria-labelledby="page-title">
+        <div class="game-card__heading">
+          <p class="eyebrow">É a sua vez</p>
+          <h1 id="page-title">Gire e descubra!</h1>
+          <p class="intro">Toque na roleta. Ela gira por 4 segundos.</p>
+        </div>
+
+        <button
+          class="wheel-action"
+          id="wheelAction"
+          type="button"
+          aria-label="Girar a roleta"
+        >
+          <span class="wheel-pointer" aria-hidden="true"></span>
+          <span class="wheel" id="wheel" aria-hidden="true">
+            <canvas id="wheelCanvas" width="640" height="640"></canvas>
+          </span>
+          <span class="wheel-center" aria-hidden="true">
+            <span>CTUR</span>
+          </span>
+        </button>
+
+        <div class="result" id="result" aria-live="polite" data-state="ready">
+          <span class="result__icon" aria-hidden="true">✦</span>
+          <p id="resultText">A sorte está lançada.</p>
+        </div>
+
+        <button class="spin-button" id="spinButton" type="button">
+          <span class="spin-button__icon" aria-hidden="true">↻</span>
+          <span id="spinButtonText">Girar a roleta</span>
+        </button>
+
+        <div class="fairness" aria-label="Informações da roleta">
+          <span>8 opções</span>
+          <i aria-hidden="true"></i>
+          <span>chances iguais</span>
+          <i aria-hidden="true"></i>
+          <span>sem cadastro</span>
+        </div>
+      </section>
+
+      <p class="privacy-note">Esta roleta não coleta nem salva informações.</p>
+    </main>
+
+    <div class="confetti" id="confetti" aria-hidden="true"></div>
+    <script src="./app.js"></script>
+  </body>
+</html>
