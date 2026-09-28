@@ -2,14 +2,14 @@
   "use strict";
 
   const OUTCOMES = [
-    { message: "Ganhou brinde!", state: "win" },
-    { message: "Não ganhou...", state: "lose" },
-    { message: "Ganhou brinde!", state: "win" },
-    { message: "Não ganhou...", state: "lose" },
-    { message: "Ganhou brinde!", state: "win" },
-    { message: "Não ganhou...", state: "lose" },
-    { message: "Ganhou brinde!", state: "win" },
-    { message: "Não ganhou...", state: "lose" },
+    { message: "GANHOU!", state: "win" },
+    { message: "NÃO GANHOU...", state: "lose" },
+    { message: "GANHOU!", state: "win" },
+    { message: "NÃO GANHOU...", state: "lose" },
+    { message: "GANHOU!", state: "win" },
+    { message: "NÃO GANHOU...", state: "lose" },
+    { message: "GANHOU!", state: "win" },
+    { message: "NÃO GANHOU...", state: "lose" },
   ];
 
   const wheelAction = document.querySelector("#wheelAction");
@@ -77,21 +77,17 @@
       context.stroke();
 
       const middle = start + segmentAngle / 2;
-      const labelRadius = outerRadius * 0.62;
+      const labelRadius = outerRadius * 0.64;
+      const labelX = Math.cos(middle) * labelRadius;
+      const labelY = Math.sin(middle) * labelRadius;
       context.save();
-      let labelRotation = middle + Math.PI / 2;
-      if (labelRotation > Math.PI / 2 && labelRotation < (Math.PI * 3) / 2) {
-        labelRotation += Math.PI;
-      }
-      context.rotate(labelRotation);
-      context.translate(0, -labelRadius);
       context.fillStyle = "#ffffff";
       context.textAlign = "center";
       context.textBaseline = "middle";
-      context.font = `900 ${Math.max(10, size * 0.045)}px system-ui, sans-serif`;
-      context.fillText(isWin ? "GANHOU" : "NÃO", 0, -size * 0.026);
-      context.font = `800 ${Math.max(9, size * 0.037)}px system-ui, sans-serif`;
-      context.fillText(isWin ? "BRINDE!" : "GANHOU...", 0, size * 0.026);
+      context.shadowColor = "rgba(40, 15, 35, 0.28)";
+      context.shadowBlur = Math.max(2, size * 0.012);
+      context.font = `900 ${Math.max(10, size * 0.04)}px system-ui, sans-serif`;
+      context.fillText(outcome.message, labelX, labelY);
       context.restore();
     });
 
