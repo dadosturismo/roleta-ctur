@@ -15,6 +15,7 @@
   const wheelAction = document.querySelector("#wheelAction");
   const wheel = document.querySelector("#wheel");
   const canvas = document.querySelector("#wheelCanvas");
+  const wheelLabels = document.querySelector("#wheelLabels");
   const spinButton = document.querySelector("#spinButton");
   const spinButtonText = document.querySelector("#spinButtonText");
   const result = document.querySelector("#result");
@@ -26,6 +27,7 @@
   let spinning = false;
   let selectedIndex = 0;
   let finishTimer = null;
+  let labelAnimationFrame = null;
 
   function normalizeDegrees(degrees) {
     return ((degrees % 360) + 360) % 360;
@@ -48,6 +50,43 @@
     canvas.height = size * pixelRatio;
     context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
     drawWheel(size);
+  }
+
+  function createWheelLabels() {
+    const labelRadius = 34;
+    OUTCOMES.forEach((outcome, index) => {
+      const angle = -Math.PI / 2 + index * ((Math.PI * 2) / OUTCOMES.length);
+      const label = document.createElement("span");
+      const copy = document.createElement("span");
+      label.className = "wheel-label";
+      copy.className = "wheel-label__copy";
+      label.style.left = `${50 + Math.cos(angle) * labelRadius}%`;
+      label.style.top = `${50 + Math.sin(angle) * labelRadius}%`;
+
+      if (outcome.state === "win") {
+        const line = document.createElement("span");
+        line.textContent = "GANHOU!";
+        copy.append(line);
+      } else {
+        ["NÃO", "GANHOU..."].forEach((text) => {
+          const line = document.createElement("span");
+          line.textContent = text;
+          copy.append(line);
+        });
+      }
+
+      label.append(copy);
+      wheelLabels.append(label);
+    });
+  }
+
+  function syncLabelOrientation() {
+    wheel.style.setProperty("--counter-rotation", `${-getRotationDegrees(wheel)}deg`);
+  }
+
+  function followWheelRotation() {
+    syncLabelOrientation();
+    if (spinning) labelAnimationFrame = window.requestAnimationFrame(followWheelRotation);
   }
 
   function drawWheel(size) {
@@ -76,19 +115,6 @@
       context.strokeStyle = "rgba(255, 255, 255, 0.93)";
       context.stroke();
 
-      const middle = start + segmentAngle / 2;
-      const labelRadius = outerRadius * 0.64;
-      const labelX = Math.cos(middle) * labelRadius;
-      const labelY = Math.sin(middle) * labelRadius;
-      context.save();
-      context.fillStyle = "#ffffff";
-      context.textAlign = "center";
-      context.textBaseline = "middle";
-      context.shadowColor = "rgba(40, 15, 35, 0.28)";
-      context.shadowBlur = Math.max(2, size * 0.012);
-      context.font = `900 ${Math.max(10, size * 0.04)}px system-ui, sans-serif`;
-      context.fillText(outcome.message, labelX, labelY);
-      context.restore();
     });
 
     context.beginPath();
@@ -108,6 +134,7 @@
   function setWheelRotation(startDegrees, endDegrees, duration) {
     wheel.style.transition = "none";
     wheel.style.transform = `rotate(${startDegrees}deg)`;
+    syncLabelOrientation();
     void wheel.offsetWidth;
     wheel.style.transition = `transform ${duration}ms cubic-bezier(0.12, 0.72, 0.12, 1)`;
     wheel.style.transform = `rotate(${endDegrees}deg)`;
@@ -116,6 +143,8 @@
   function finishSpin() {
     window.clearTimeout(finishTimer);
     spinning = false;
+    window.cancelAnimationFrame(labelAnimationFrame);
+    syncLabelOrientation();
     const outcome = OUTCOMES[selectedIndex];
     setResult(outcome.message, outcome.state, outcome.state === "win" ? "✦" : "•");
     spinButtonText.textContent = "Girar novamente";
@@ -145,6 +174,7 @@
     spinButtonText.textContent = "Parar mais rápido";
     wheelAction.setAttribute("aria-label", "Parar a roleta mais rápido");
     setWheelRotation(current, finalRotation, 4000);
+    followWheelRotation();
     scheduleFinish(4000);
   }
 
@@ -176,7 +206,9 @@
   wheelAction.addEventListener("click", startSpin);
   spinButton.addEventListener("click", startSpin);
   window.addEventListener("resize", resizeCanvas, { passive: true });
+  createWheelLabels();
   resizeCanvas();
+  syncLabelOrientation();
 
   if ("serviceWorker" in navigator) {
     window.addEventListener("load", () => {
